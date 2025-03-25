@@ -1,29 +1,33 @@
 package config
 
 import (
-	"encoding/json"
-	"os"
+    "github.com/spf13/viper"
+    "log"
 )
 
-type Config struct {
-	KafkaBrokers string `json:"kafka_brokers"`
-	KafkaTopic   string `json:"kafka_topic"`
-	APIEndpoint  string `json:"api_endpoint"`
-	GroupID      string `json:"group_id"`
+type AppConfig struct {
+    KafkaBroker      string `mapstructure:"kafka_broker"`
+    KafkaTopic       string `mapstructure:"kafka_topic"`
+    KafkaGroupID     string `mapstructure:"kafka_group_id"`
+    APIEndpoint      string `mapstructure:"api_endpoint"`
+    DLQTopic         string `mapstructure:"dlq_topic"`
+    RequiredFields   []string `mapstructure:"required_fields"`
+    SchemaPath       string `mapstructure:"schema_path"`
 }
 
-func LoadConfig(path string) (*Config, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
+var Config AppConfig
 
-	decoder := json.NewDecoder(file)
-	cfg := &Config{}
-	err = decoder.Decode(cfg)
-	if err != nil {
-		return nil, err
-	}
-	return cfg, nil
+func LoadConfig() {
+    viper.SetConfigName("config")
+    viper.SetConfigType("yaml")
+    viper.AddConfigPath(".")
+    viper.AutomaticEnv()
+
+    if err := viper.ReadInConfig(); err != nil {
+        log.Fatalf("Failed to read config: %v", err)
+    }
+
+    if err := viper.Unmarshal(&Config); err != nil {
+        log.Fatalf("Unable to decode config: %v", err)
+    }
 }
