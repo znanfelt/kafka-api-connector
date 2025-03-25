@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-api-consumer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kafka-api-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-api-consumer
+    spec:
+      containers:
+      - name: kafka-api-consumer
+        image: your-registry/kafka-api-consumer:latest
+        ports:
+        - containerPort: 2112
+        env:
+        - name: PORT
+          value: "2112"

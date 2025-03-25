@@ -1,0 +1,7 @@
+kafka_broker: "localhost:9092"
+kafka_topic: "redpanda-topic"
+kafka_group_id: "api-forwarder"
+api_endpoint: "https://api.example.com/data"
+dlq_topic: "dlq-topic"
+required_fields: ["id"]
+schema_path: "./schema.json"

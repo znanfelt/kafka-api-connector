@@ -1,0 +1,13 @@
+[Unit]
+Description=Kafka API Consumer Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/kafka-api-consumer
+Restart=always
+RestartSec=5
+Environment=PORT=2112
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-api-consumer
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: kafka-api-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-api-consumer
+    spec:
+      containers:
+      - name: kafka-api-consumer
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args: ["--schema", "/etc/config/schema.json"]
+        ports:
+        - containerPort: 2112
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: kafka-api-schema

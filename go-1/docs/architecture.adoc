@@ -1,0 +1,43 @@
+= Kafka API Enterprise Architecture
+:toc:
+:sectnums:
+
+== Overview
+
+Kafka API Enterprise is a Go-based pipeline for ingesting high-throughput Kafka messages, applying transformation, deduplication, and forwarding to REST APIs.
+
+== Components
+
+- Kafka Consumer (`franz-go`)
+- Bloom Filter (Rotating)
+- HTTP Poster
+- DLQ Handler
+- Schema Validator
+- Prometheus Metrics
+- Integration Test Framework (Testcontainers)
+
+== Architecture
+
+[plantuml]
+....
+@startuml
+actor Developer
+participant "Kafka Consumer" as C
+participant "Deduplicator" as D
+participant "Transformer" as T
+participant "HTTP Client" as H
+participant "DLQ Producer" as DLQ
+
+Developer -> C: Configure via ENV or CLI
+C -> D: Check for duplicate
+D -> T: Transform valid messages
+T -> H: Post to REST API
+H -> DLQ: On failure
+@enduml
+....
+
+== Observability
+
+- Prometheus metrics exposed at `/metrics`
+- CI tested and code-covered
+- Chaos & contract tested

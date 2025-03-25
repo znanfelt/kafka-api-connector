@@ -1,0 +1,47 @@
+name: Go CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      kafka:
+        image: bitnami/kafka:latest
+        ports:
+          - 9092:9092
+        env:
+          ALLOW_PLAINTEXT_LISTENER: yes
+          KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      zookeeper:
+        image: bitnami/zookeeper:latest
+        ports:
+          - 2181:2181
+        env:
+          ALLOW_ANONYMOUS_LOGIN: yes
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+
+      - name: Download dependencies
+        run: go mod tidy
+
+      - name: Run Unit Tests
+        run: go test ./... -v -coverprofile=coverage.out
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.out
+
+      - name: Run Integration Tests
+        run: go test -tags=integration ./cmd/consumer

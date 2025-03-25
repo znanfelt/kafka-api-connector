@@ -1,0 +1,30 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go modules
+vendor/
+go.sum
+
+# Logs and IDEs
+*.log
+.idea/
+.vscode/
+*.swp
+
+# Test output
+coverage.out
+
+# Secrets
+test-secrets/
+*.key
+*.pem
+
+# OS artifacts
+.DS_Store
+Thumbs.db
