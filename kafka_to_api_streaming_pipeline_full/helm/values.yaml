@@ -1,0 +1,63 @@
+# Helm values.yaml for Kafka to API Pipeline
+
+replicaCount: 2
+
+image:
+  repository: your-registry/kafka-api-pipeline
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  metricsPort: 2112
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+env:
+  kafka:
+    brokers: "localhost:9092"
+    topic: "events"
+    dlq_topic: "events_dlq"
+    username: "/mnt/secrets/kafka_user"
+    password: "/mnt/secrets/kafka_pass"
+  api:
+    primary_url: "http://localhost:8080/events"
+    secondary_url: "http://localhost:8081/events"
+    auth_token: "/mnt/secrets/api_token"
+  dedup:
+    strategy: "memory"
+    ttl: 60
+  dlq_limiter:
+    rate: 50
+    capacity: 100
+
+volumes:
+  - name: secrets
+    secret:
+      secretName: kafka-api-pipeline-secrets
+
+volumeMounts:
+  - name: secrets
+    mountPath: /mnt/secrets
+    readOnly: true
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
