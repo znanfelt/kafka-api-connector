@@ -1,19 +1,2 @@
 kafka:
   brokers: localhost:9092
-  topic: events
-  dlq_topic: events_dlq
-  username: file://secrets/kafka_user
-  password: file://secrets/kafka_pass
-
-api:
-  primary_url: http://localhost:8080/events
-  secondary_url: http://localhost:8081/events
-  auth_token: file://secrets/api_token
-
-dedup:
-  strategy: memory
-  ttl: 60
-
-dlq_limiter:
-  rate: 50    # messages per second
-  capacity: 100
